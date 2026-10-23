@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QM320 Python Quest — Midterm</title>
+<style>
+  :root {
+    --navy: #1E2761;
+    --navy-deep: #141B47;
+    --orange: #F5A623;
+    --blue: #4A6CF7;
+    --ice: #CADCFC;
+    --bg: #F3F6FD;
+    --card: #FFFFFF;
+    --text: #1B1F3B;
+    --muted: #5B6383;
+    --line: #DDE4F5;
+    --good: #1F9D61;
+    --good-bg: #E6F6EE;
+    --bad: #C8423B;
+    --bad-bg: #FBEAE9;
+    --code-bg: #10163A;
+    --code-text: #7FE787;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Calibri, "Segoe UI", Candara, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.45;
+  }
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 18px 16px 16px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px; }
+  header .wrap { padding: 0; }
+  .brand { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between; }
+  h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; margin: 0; }
+  h1 { font-size: 26px; letter-spacing: .2px; }
+  h1 span { color: var(--orange); }
+  .tag { font-size: 13px; color: var(--ice); margin-top: 2px; }
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+    border-radius: 999px; padding: 5px 12px; font-size: 14px; white-space: nowrap;
+  }
+  .pill b { color: var(--orange); }
+  main { padding: 20px 0 40px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(30,39,97,.05);
+  }
+  .muted { color: var(--muted); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  input[type=text] {
+    font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px;
+    min-width: 0; flex: 1 1 200px; background: #fff; color: var(--text);
+  }
+  button {
+    font: inherit; cursor: pointer; border-radius: 10px; border: 1px solid transparent;
+    padding: 9px 16px; background: var(--navy); color: #fff; font-weight: 600;
+  }
+  button:hover { filter: brightness(1.12); }
+  button:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+  button.secondary { background: #fff; color: var(--navy); border-color: var(--line); }
+  button.accent { background: var(--orange); color: var(--navy-deep); }
+  button:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+  .xpbar { height: 12px; background: var(--ice); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+  .xpbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--orange)); width: 0; transition: width .5s; }
+  .levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .level {
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; background: #fff;
+    display: flex; flex-direction: column; gap: 6px; position: relative;
+  }
+  .level .wk { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: var(--blue); text-transform: uppercase; }
+  .level h3 { font-size: 19px; color: var(--navy); }
+  .level .topics { font-size: 14px; color: var(--muted); flex: 1; }
+  .stars { font-size: 20px; letter-spacing: 2px; color: #D5DBEA; }
+  .stars .on { color: var(--orange); }
+  .level.locked { background: #F7F8FC; }
+  .level.locked h3, .level.locked .topics { color: #9AA1BC; }
+  .lock { font-size: 13px; color: var(--muted); }
+  .badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .badge {
+    border: 1px dashed var(--line); border-radius: 12px; padding: 10px; text-align: center; font-size: 13px; color: #9AA1BC;
+  }
+  .badge .ic { font-size: 28px; display: block; filter: grayscale(1); opacity: .45; }
+  .badge b { display: block; font-size: 14px; }
+  .badge.got { border: 1px solid var(--orange); background: #FFF8EA; color: var(--text); }
+  .badge.got .ic { filter: none; opacity: 1; }
+  .qtop { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .dots { display: flex; gap: 5px; }
+  .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--ice); display: block; }
+  .dots i.ok { background: var(--good); }
+  .dots i.no { background: var(--bad); }
+  .dots i.cur { outline: 2px solid var(--navy); outline-offset: 1px; }
+  .kind { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: var(--ice); color: var(--navy); }
+  .kind.bug { background: #FFE9C2; color: #7A4A00; }
+  .kind.trace { background: #DCF3E6; color: #14613C; }
+  .kind.plan { background: #EDE3FF; color: #4B2A8C; }
+  pre.code {
+    background: var(--code-bg); color: var(--code-text); border-radius: 12px; padding: 30px 16px 14px;
+    font-family: Consolas, "Cascadia Code", "Courier New", monospace; font-size: 15.5px; line-height: 1.5;
+    overflow-x: auto; position: relative; margin: 10px 0 14px; white-space: pre;
+  }
+  pre.code::before {
+    content: attr(data-lang); position: absolute; top: 8px; left: 14px; font-family: Calibri, Arial, sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--ice);
+  }
+  .question { font-size: 19px; font-weight: 600; color: var(--navy); margin: 4px 0 12px; }
+  .options { display: grid; gap: 10px; }
+  .opt {
+    text-align: left; background: #fff; color: var(--text); border: 2px solid var(--line); font-weight: 400;
+    display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px;
+  }
+  .opt .k {
+    flex: 0 0 26px; height: 26px; border-radius: 50%; background: var(--ice); color: var(--navy);
+    display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
+  }
+  .opt .t { white-space: pre-wrap; font-family: Consolas, "Cascadia Code", "Courier New", monospace; font-size: 15px; padding-top: 2px; }
+  .opt .t.plain { font-family: inherit; font-size: 16px; }
+  .opt:hover:not(:disabled) { border-color: var(--blue); filter: none; }
+  .opt.correct { border-color: var(--good); background: var(--good-bg); opacity: 1; }
+  .opt.correct .k { background: var(--good); color: #fff; }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-bg); opacity: 1; }
+  .opt.wrong .k { background: var(--bad); color: #fff; }
+  .opt:disabled { cursor: default; }
+  .feedback { margin-top: 14px; border-radius: 12px; padding: 14px; border-left: 5px solid var(--blue); background: #EEF2FF; display: none; }
+  .feedback.show { display: block; }
+  .feedback.good { border-left-color: var(--good); background: var(--good-bg); }
+  .feedback.bad { border-left-color: var(--bad); background: var(--bad-bg); }
+  .feedback h3 { font-size: 18px; margin-bottom: 4px; }
+  .revisit { font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .hint { margin-top: 12px; padding: 10px 14px; background: #FFF8EA; border: 1px solid #F6DFA9; border-radius: 10px; display: none; font-size: 15px; }
+  .hint.show { display: block; }
+  .actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .big { font-size: 46px; font-family: Georgia, serif; color: var(--navy); margin: 6px 0; }
+  .center { text-align: center; }
+  .toast {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(140%);
+    background: var(--navy); color: #fff; border-radius: 14px; padding: 12px 18px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+    transition: transform .35s; z-index: 10; max-width: calc(100% - 32px); text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast b { color: var(--orange); }
+  .cert {
+    border: 6px double var(--navy); border-radius: 18px; padding: 26px 18px; text-align: center; background: #fff;
+  }
+  .cert h2 { font-size: 28px; color: var(--navy); }
+  .cert .name { font-size: 30px; font-family: Georgia, serif; color: var(--blue); margin: 10px 0; word-break: break-word; }
+  .cert .icons { font-size: 30px; letter-spacing: 6px; margin: 10px 0; }
+  .note { font-size: 14px; color: var(--muted); }
+  .hidden { display: none !important; }
+  @media (max-width: 520px) {
+    h1 { font-size: 22px; }
+    .question { font-size: 17px; }
+    pre.code { font-size: 14px; }
+    .big { font-size: 38px; }
+  }
+  @media print {
+    header, .no-print { display: none !important; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap brand">
+    <div>
+      <h1>QM320 <span>Python Quest</span></h1>
+      <div class="tag">Programming for Business Analytics · University of Bahrain · Midterm practice: Weeks 1–6 (not graded)</div>
+    </div>
+    <div class="stats">
+      <span class="pill">XP <b id="hdr-xp">0</b></span>
+      <span class="pill">Rank <b id="hdr-rank">Beginner</b></span>
+      <span class="pill">Badges <b id="hdr-badges">0</b></span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="card">
+      <h2 style="font-size:21px;color:var(--navy)">Welcome, analyst!</h2>
+      <p class="muted" style="margin:6px 0 12px">Get ready for the midterm (Weeks 1–6). Six levels follow the six weeks of QM320, so start with the week you are least sure about. The <b>Midterm Challenge</b> mixes them in the exam's styles: trace the code, predict the output, find the bug and plan in pseudocode. It opens when you have finished any three week levels. Earn XP, stars and badges, and replay any level to improve your stars. Your progress is saved on this device only.</p>
+      <div class="row">
+        <label for="nick" class="muted" style="font-size:15px">Your name for the certificate:</label>
+        <input type="text" id="nick" maxlength="40" placeholder="e.g. Fatima A.">
+      </div>
+      <div style="margin-top:14px">
+        <div class="row" style="justify-content:space-between">
+          <span><b id="rank-name">Beginner</b> <span class="muted" id="rank-next"></span></span>
+          <span class="muted" id="xp-text"></span>
+        </div>
+        <div class="xpbar"><i id="xp-fill"></i></div>
+      </div>
+    </div>
+
+    <h2 style="font-size:20px;color:var(--navy);margin:20px 0 10px">Levels</h2>
+    <div class="levels" id="levels"></div>
+
+    <h2 style="font-size:20px;color:var(--navy);margin:24px 0 10px">Badges</h2>
+    <div class="card"><div class="badges" id="badges"></div></div>
+
+    <div class="row no-print" style="justify-content:space-between;margin-top:8px">
+      <button class="accent" id="btn-cert">🏆 My certificate</button>
+      <button class="secondary" id="btn-reset">Reset my progress</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="card">
+      <div class="qtop">
+        <div>
+          <div class="muted" style="font-size:14px" id="q-level"></div>
+          <div class="dots" id="q-dots" aria-hidden="true"></div>
+        </div>
+        <div class="stats">
+          <span class="pill" style="background:var(--ice);color:var(--navy);border-color:var(--ice)">XP this level <b id="q-xp" style="color:var(--navy)">0</b></span>
+          <span class="pill" style="background:#FFF3DB;color:#7A4A00;border-color:#F6DFA9">🔥 Streak <b id="q-streak" style="color:#7A4A00">0</b></span>
+        </div>
+      </div>
+      <span class="kind" id="q-kind">Predict the output</span>
+      <pre class="code" id="q-code" data-lang="PYTHON"></pre>
+      <div class="question" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <div class="hint" id="q-hint"></div>
+      <div class="feedback" id="q-feedback" role="status" aria-live="polite">
+        <h3 id="fb-title"></h3>
+        <div id="fb-text"></div>
+        <div class="revisit" id="fb-revisit"></div>
+      </div>
+      <div class="actions">
+        <div class="row">
+          <button class="secondary" id="btn-quit">← Map</button>
+          <button class="secondary" id="btn-hint">💡 Hint (−5 XP)</button>
+        </div>
+        <button id="btn-next" disabled>Next →</button>
+      </div>
+    </div>
+    <p class="note center">Tip: press 1–4 to answer and Enter for the next question.</p>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="hidden">
+    <div class="card center">
+      <div class="muted" id="r-level"></div>
+      <div class="big" id="r-score"></div>
+      <div class="stars" id="r-stars" style="font-size:34px"></div>
+      <p id="r-msg" style="margin:10px 0 4px"></p>
+      <p class="muted" id="r-xp"></p>
+      <div id="r-badges" style="margin-top:8px"></div>
+      <div class="row" style="justify-content:center;margin-top:16px">
+        <button class="secondary" id="btn-replay">↻ Replay level</button>
+        <button id="btn-map">Back to the map</button>
+      </div>
+    </div>
+    <div class="card" id="r-review"></div>
+  </section>
+
+  <!-- CERTIFICATE -->
+  <section id="certificate" class="hidden">
+    <div class="cert">
+      <div class="muted">QM320 · Programming for Business Analytics · University of Bahrain</div>
+      <h2 style="margin-top:10px">Python Quest — Certificate of Progress</h2>
+      <div class="name" id="c-name"></div>
+      <div id="c-line"></div>
+      <div class="icons" id="c-icons"></div>
+      <div class="muted" id="c-date"></div>
+      <p class="note" style="margin-top:14px">Practice game — not part of the course grade.</p>
+    </div>
+    <div class="row no-print" style="justify-content:center;margin-top:14px">
+      <button class="secondary" id="btn-cert-back">← Map</button>
+      <button id="btn-print">Print / save as PDF</button>
+    </div>
+    <p class="note center no-print">Take a screenshot and share it in our MS Teams channel.</p>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Question bank. Every predict-the-output answer is checked by running the code in Python before release. -->
+<script type="application/json" id="bank">
+{
+  "levels": [
+    {
+      "id": "w1",
+      "week": "Week 1",
+      "title": "First Programs",
+      "badge": "first_steps",
+      "topics": "print(), arithmetic, reading errors, algorithms and pseudocode",
+      "questions": [
+        {
+          "id": "w1q1",
+          "kind": "predict",
+          "code": "print(10 + 5 * 2)",
+          "q": "What does this print?",
+          "options": [
+            "20",
+            "30",
+            "25",
+            "Error"
+          ],
+          "answer": 0,
+          "stdout": "20",
+          "hint": "Python multiplies before it adds — just like a calculator with brackets.",
+          "explain": "5 * 2 is done first (10), then 10 + 10 = 20. Write (10 + 5) * 2 if you want 30.",
+          "revisit": "Week 1 — Printing Numbers & Math"
+        },
+        {
+          "id": "w1q2",
+          "kind": "predict",
+          "code": "print(20 / 4)",
+          "q": "What does this print?",
+          "options": [
+            "5",
+            "5.0",
+            "4",
+            "Error"
+          ],
+          "answer": 1,
+          "stdout": "5.0",
+          "hint": "Look at the division sign /. What does it always show?",
+          "explain": "Division with / always gives a number with a decimal point, even when it divides exactly: 5.0.",
+          "revisit": "Week 1 — Reading Output: why 22.0 and not 22?"
+        },
+        {
+          "id": "w1q5",
+          "kind": "bug",
+          "code": "print(\"Welcome to QM320)",
+          "q": "Which error does Python show?",
+          "options": [
+            "NameError",
+            "SyntaxError",
+            "No error — it prints the text",
+            "Logic error"
+          ],
+          "answer": 1,
+          "error": "SyntaxError",
+          "hint": "Count the quote marks.",
+          "explain": "The closing quote is missing, so Python cannot even read the line: SyntaxError. Fix: print(\"Welcome to QM320\").",
+          "revisit": "Week 1 — Errors: SyntaxError"
+        },
+        {
+          "id": "w1q6",
+          "kind": "bug",
+          "code": "Print(\"Hello\")",
+          "q": "Which error does Python show?",
+          "options": [
+            "SyntaxError",
+            "No error — it prints Hello",
+            "NameError",
+            "Logic error"
+          ],
+          "answer": 2,
+          "error": "NameError",
+          "hint": "Python names are case-sensitive.",
+          "explain": "Python looks for a name called Print (capital P) and cannot find it: NameError. The correct name is print.",
+          "revisit": "Week 1 — Errors: NameError"
+        },
+        {
+          "id": "w1q7",
+          "kind": "bug",
+          "code": "price = 10\nquantity = 3\nsubtotal = price + quantity\nprint(subtotal)",
+          "q": "The manager expected BD 30, but it prints 13. What kind of problem is this?",
+          "options": [
+            "SyntaxError",
+            "NameError",
+            "Logic error — it runs, but the answer is wrong",
+            "No problem — 13 is right"
+          ],
+          "answer": 2,
+          "plain": true,
+          "stdout": "13",
+          "hint": "Python ran without any red error box. Is the calculation right for a subtotal?",
+          "explain": "The code runs, but + should be *: a subtotal is price × quantity. Code that runs but gives a wrong answer has a logic error.",
+          "revisit": "Week 1 — It runs. Does it answer the question?"
+        },
+        {
+          "id": "w1q8",
+          "kind": "predict",
+          "code": "print(20 + 20 * 10 / 100)",
+          "q": "An order of BD 20 plus 10% VAT. What does this print?",
+          "options": [
+            "22",
+            "40.0",
+            "2.0",
+            "22.0"
+          ],
+          "answer": 3,
+          "stdout": "22.0",
+          "hint": "* and / come before +. And / always gives a decimal point.",
+          "explain": "20 * 10 / 100 = 2.0 (VAT), then 20 + 2.0 = 22.0. Once a decimal enters the sum, the result keeps it.",
+          "revisit": "Week 1 — The order question: amount due"
+        },
+        {
+          "id": "w1q9",
+          "kind": "plan",
+          "code": "START\n________________\nCALCULATE total = price * quantity\nDISPLAY total\nEND",
+          "q": "Which line fills the gap in this plan?",
+          "options": [
+            "INPUT price, quantity",
+            "DISPLAY price",
+            "END",
+            "CALCULATE total = total + 1"
+          ],
+          "answer": 0,
+          "hint": "What does the plan need before it can calculate anything?",
+          "explain": "A plan first takes in what it needs (INPUT), then calculates, then displays. Without price and quantity there is nothing to multiply.",
+          "revisit": "Week 1 — Pseudocode: INPUT, CALCULATE, DISPLAY",
+          "plain": true,
+          "noexec": true
+        },
+        {
+          "id": "w1q10",
+          "kind": "plan",
+          "code": "# An algorithm for an order:\n#   INPUT price, quantity\n#   CALCULATE total\n#   DISPLAY total",
+          "q": "Which statement about an algorithm is true?",
+          "options": [
+            "It is a clear, finite list of steps with a start and an end",
+            "It must be written in Python",
+            "It can repeat for ever without stopping",
+            "It only works in Excel"
+          ],
+          "answer": 0,
+          "hint": "Think of a recipe: clear steps that finish.",
+          "explain": "An algorithm is a clear, finite sequence of steps for solving a problem. Pseudocode, a flowchart or Python can all express it.",
+          "revisit": "Week 1 — What is an algorithm?",
+          "plain": true,
+          "noexec": true
+        }
+      ]
+    },
+    {
+      "id": "w2",
+      "week": "Week 2",
+      "title": "Variables & Types",
+      "badge": "type_tamer",
+      "topics": "int / float / str / bool, int() and str(), len() and .upper(), f-strings with :.2f",
+      "questions": [
+        {
+          "id": "w2q1",
+          "kind": "predict",
+          "code": "print(type(29.99))",
+          "q": "What does this print?",
+          "options": [
+            "<class 'int'>",
+            "<class 'float'>",
+            "<class 'str'>",
+            "29.99"
+          ],
+          "answer": 1,
+          "stdout": "<class 'float'>",
+          "hint": "Does the number have a decimal point?",
+          "explain": "A number with a decimal point is a float. type() tells you the kind of value.",
+          "revisit": "Week 2 — Data types"
+        },
+        {
+          "id": "w2q2",
+          "kind": "predict",
+          "code": "print(\"5\" + \"3\")",
+          "q": "What does this print?",
+          "options": [
+            "8",
+            "53",
+            "5 + 3",
+            "Error"
+          ],
+          "answer": 1,
+          "stdout": "53",
+          "hint": "Both values are in quotes. What does + do with text?",
+          "explain": "\"5\" and \"3\" are text, and + joins text: 53. It does not add the numbers.",
+          "revisit": "Week 2 — Combining types"
+        },
+        {
+          "id": "w2q3",
+          "kind": "predict",
+          "code": "print(int(\"5\") + 3)",
+          "q": "What does this print?",
+          "options": [
+            "53",
+            "Error",
+            "8",
+            "5 3"
+          ],
+          "answer": 2,
+          "stdout": "8",
+          "hint": "int() turns text into a whole number.",
+          "explain": "int(\"5\") becomes the number 5, and 5 + 3 = 8.",
+          "revisit": "Week 2 — int(), float() and str()"
+        },
+        {
+          "id": "w2q5",
+          "kind": "predict",
+          "code": "price = 4.5\nprint(f\"BD {price:.2f}\")",
+          "q": "What does this print?",
+          "options": [
+            "BD 4.5",
+            "BD 4.50",
+            "BD 4.500",
+            "BD 5"
+          ],
+          "answer": 1,
+          "stdout": "BD 4.50",
+          "hint": ":.2f means 'show exactly two decimal places'.",
+          "explain": ":.2f always shows two decimals — the way money is written: BD 4.50.",
+          "revisit": "Week 2 — f-strings and :.2f"
+        },
+        {
+          "id": "w2q6",
+          "kind": "bug",
+          "code": "print(12 + \" dinars\")",
+          "q": "This line crashes with a TypeError. Which line fixes it?",
+          "options": [
+            "print(int(12) + \" dinars\")",
+            "print(12 + dinars)",
+            "print(str(12) + \" dinars\")",
+            "print(\"12\" + 12)"
+          ],
+          "answer": 2,
+          "error": "TypeError",
+          "fix_stdout": "12 dinars",
+          "hint": "You cannot + a number and text. Turn the number into text first.",
+          "explain": "A number and text cannot be joined. str(12) turns the number into text, so the + joins them: 12 dinars.",
+          "revisit": "Week 2 — Combining types: str() bridges the gap"
+        },
+        {
+          "id": "w2q7",
+          "kind": "predict",
+          "code": "stock = 20\nreorder_level = 25\nprint(stock < reorder_level)",
+          "q": "What does this print?",
+          "options": [
+            "20",
+            "False",
+            "True",
+            "Error"
+          ],
+          "answer": 2,
+          "stdout": "True",
+          "hint": "A comparison gives a yes/no answer: True or False.",
+          "explain": "Is 20 less than 25? Yes, so the comparison prints True — time to reorder.",
+          "revisit": "Week 2 — Booleans and comparisons"
+        },
+        {
+          "id": "w2q9",
+          "kind": "predict",
+          "code": "shop = \"Seef Mall\"\nprint(shop.upper())\nprint(len(shop))",
+          "q": "What does this print?",
+          "options": [
+            "SEEF MALL\n9",
+            "SEEF MALL\n8",
+            "Seef Mall\n9",
+            "SEEF\n9"
+          ],
+          "answer": 0,
+          "hint": ".upper() changes the letters to capitals. len() counts every character — the space too.",
+          "explain": ".upper() gives SEEF MALL. len() counts 9 characters: 4 letters, the space, then 4 more letters.",
+          "revisit": "Week 2 — Strings: len(), .upper() and .lower()",
+          "stdout": "SEEF MALL\n9"
+        },
+        {
+          "id": "w2q10",
+          "kind": "predict",
+          "code": "price = 2.5\nqty = 4\nprint(f\"Total: BD {price * qty:.2f}\")",
+          "q": "What does this print?",
+          "options": [
+            "Total: BD 10",
+            "Total: BD 10.0",
+            "Total: BD 10.00",
+            "Total: BD {price * qty:.2f}"
+          ],
+          "answer": 2,
+          "hint": "Inside { } Python calculates first; :.2f then shows two decimals.",
+          "explain": "2.5 * 4 = 10.0, and :.2f shows it with exactly two decimals: Total: BD 10.00.",
+          "revisit": "Week 2 — f-strings and :.2f",
+          "stdout": "Total: BD 10.00"
+        }
+      ]
+    },
+    {
+      "id": "w3",
+      "week": "Week 3",
+      "title": "Conditions",
+      "badge": "decision_maker",
+      "topics": "if / elif / else, the boundary (> vs >=), and / or",
+      "questions": [
+        {
+          "id": "w3q1",
+          "kind": "predict",
+          "code": "order_total = 100\nif order_total >= 100:\n    print(\"Free shipping\")\nelse:\n    print(\"Shipping BD 3\")",
+          "q": "What does this print?",
+          "options": [
+            "Shipping BD 3",
+            "Free shipping",
+            "Both lines",
+            "Nothing"
+          ],
+          "answer": 1,
+          "stdout": "Free shipping",
+          "hint": "Does >= include 100 itself?",
+          "explain": ">= means 'at least', so exactly 100 qualifies: Free shipping.",
+          "revisit": "Week 3 — if / else and the boundary"
+        },
+        {
+          "id": "w3q2",
+          "kind": "predict",
+          "code": "points = 350\nif points >= 500:\n    print(\"Gold\")\nelif points >= 300:\n    print(\"Silver\")\nelse:\n    print(\"Bronze\")",
+          "q": "A loyalty member has 350 points. What does this print?",
+          "options": [
+            "Gold",
+            "Bronze",
+            "Silver",
+            "Silver and Bronze"
+          ],
+          "answer": 2,
+          "stdout": "Silver",
+          "hint": "Python checks the rules from the top and stops at the first True one.",
+          "explain": "350 >= 500 is False; 350 >= 300 is True, so Silver is printed and the chain stops.",
+          "revisit": "Week 3 — elif tiers"
+        },
+        {
+          "id": "w3q3",
+          "kind": "predict",
+          "code": "age = 25\nincome = 20000\nif age >= 21 and income >= 30000:\n    print(\"Approved\")\nelse:\n    print(\"Review\")",
+          "q": "A loan applicant: age 25, income BD 20,000. What does this print?",
+          "options": [
+            "Approved",
+            "Review",
+            "Approved Review",
+            "Error"
+          ],
+          "answer": 1,
+          "stdout": "Review",
+          "hint": "and needs BOTH rules to be True.",
+          "explain": "The age rule is True but 20000 >= 30000 is False. With and, one False makes the whole condition False: Review.",
+          "revisit": "Week 3 — and / or (combining rules)"
+        },
+        {
+          "id": "w3q4",
+          "kind": "predict",
+          "code": "vip = False\ntotal = 120\nif vip or total >= 100:\n    print(\"Free gift\")\nelse:\n    print(\"No gift\")",
+          "q": "What does this print?",
+          "options": [
+            "No gift",
+            "Error",
+            "Free gift",
+            "Nothing"
+          ],
+          "answer": 2,
+          "stdout": "Free gift",
+          "hint": "or needs only ONE rule to be True.",
+          "explain": "vip is False, but 120 >= 100 is True. With or, one True is enough: Free gift.",
+          "revisit": "Week 3 — and / or (combining rules)"
+        },
+        {
+          "id": "w3q6",
+          "kind": "bug",
+          "code": "sales = 6000\nif sales >= 1000:\n    print(\"Good\")\nelif sales >= 5000:\n    print(\"Excellent\")",
+          "q": "It prints Good, but BD 6,000 should be Excellent. What is the fix?",
+          "options": [
+            "Change elif to else",
+            "Put the strictest rule first: check sales >= 5000 before sales >= 1000",
+            "Change >= to ==",
+            "Add a second print"
+          ],
+          "answer": 1,
+          "plain": true,
+          "stdout": "Good",
+          "hint": "Python stops at the FIRST rule that is True. Which rule does 6000 meet first?",
+          "explain": "6000 >= 1000 is already True, so Python never reaches the Excellent rule. In a chain, put the strictest rule first.",
+          "revisit": "Week 3 — elif tiers: strictest first"
+        },
+        {
+          "id": "w3q7",
+          "kind": "bug",
+          "code": "stock = 4\nif stock < 10\n    print(\"Reorder\")",
+          "q": "Which error does Python show?",
+          "options": [
+            "NameError",
+            "TypeError",
+            "No error — it prints Reorder",
+            "SyntaxError"
+          ],
+          "answer": 3,
+          "error": "SyntaxError",
+          "hint": "Look at the end of the if line.",
+          "explain": "Every if, elif and else line must end with a colon. Without it Python cannot read the code: SyntaxError.",
+          "revisit": "Week 3 — Common mistakes"
+        },
+        {
+          "id": "w3q8",
+          "kind": "bug",
+          "code": "grade = \"C\"\nif grade == \"A\" or \"B\":\n    print(\"Top grade\")\nelse:\n    print(\"Keep going\")",
+          "q": "The grade is C. What does this print — and is the code right?",
+          "options": [
+            "Keep going — the code is right",
+            "Top grade — the condition is always True",
+            "Error",
+            "Nothing"
+          ],
+          "answer": 1,
+          "plain": true,
+          "stdout": "Top grade",
+          "hint": "Read the condition the way Python does: (grade == \"A\") or (\"B\").",
+          "explain": "\"B\" on its own counts as True, so the condition is always True. Write: grade == \"A\" or grade == \"B\".",
+          "revisit": "Week 3 — Common mistakes: the or-trap"
+        },
+        {
+          "id": "w3q9",
+          "kind": "bug",
+          "code": "quantity = 50\nif quantity > 50:\n    print(\"Bulk price\")\nelse:\n    print(\"Normal price\")",
+          "q": "Bulk price should start at 50 units or more, but 50 units prints Normal price. Which line fixes it?",
+          "options": [
+            "if quantity >= 50:",
+            "if quantity == 50:",
+            "if quantity < 50:",
+            "else quantity >= 50:"
+          ],
+          "answer": 0,
+          "hint": "Should exactly 50 count? Which operator includes the boundary?",
+          "explain": "> 50 leaves out 50 itself. 'At least 50' is >= 50, so exactly 50 gets the bulk price.",
+          "revisit": "Week 3 — The boundary: > versus >=",
+          "stdout": "Normal price",
+          "fixed": "quantity = 50\nif quantity >= 50:\n    print(\"Bulk price\")\nelse:\n    print(\"Normal price\")",
+          "fix_stdout": "Bulk price"
+        }
+      ]
+    },
+    {
+      "id": "w4",
+      "week": "Week 4",
+      "title": "Loops",
+      "badge": "loop_master",
+      "topics": "for, range(), counter / accumulator / finder, while, tracing",
+      "questions": [
+        {
+          "id": "w4q1",
+          "kind": "predict",
+          "code": "for i in range(1, 4):\n    print(i)",
+          "q": "What does this print?",
+          "options": [
+            "1\n2\n3\n4",
+            "0\n1\n2\n3",
+            "1\n2\n3",
+            "0\n1\n2"
+          ],
+          "answer": 2,
+          "stdout": "1\n2\n3",
+          "hint": "range(start, stop): the stop value is NOT included.",
+          "explain": "range(1, 4) gives 1, 2 and 3 — it stops before 4.",
+          "revisit": "Week 4 — Understanding range()"
+        },
+        {
+          "id": "w4q3",
+          "kind": "predict",
+          "code": "total = 0\nfor s in [10, 20, 30]:\n    total = total + s\nprint(total)",
+          "q": "What does this print?",
+          "options": [
+            "30",
+            "0",
+            "60",
+            "10\n30\n60"
+          ],
+          "answer": 2,
+          "stdout": "60",
+          "hint": "Trace it: total goes 10, then 30, then …",
+          "explain": "The accumulator adds each sale: 0 → 10 → 30 → 60. print is after the loop, so only 60 appears.",
+          "revisit": "Week 4 — The accumulator pattern"
+        },
+        {
+          "id": "w4q5",
+          "kind": "predict",
+          "code": "sales = [40, 90, 70]\nbest = sales[0]\nfor s in sales:\n    if s > best:\n        best = s\nprint(best)",
+          "q": "What does this print?",
+          "options": [
+            "90",
+            "40",
+            "70",
+            "200"
+          ],
+          "answer": 0,
+          "stdout": "90",
+          "hint": "best only changes when a sale beats it.",
+          "explain": "best starts at 40, changes to 90 (90 > 40), and 70 does not beat 90: the highest sale is 90.",
+          "revisit": "Week 4 — The finder pattern"
+        },
+        {
+          "id": "w4q6",
+          "kind": "predict",
+          "code": "stock = 10\nwhile stock > 0:\n    stock = stock - 4\nprint(stock)",
+          "q": "What does this print?",
+          "options": [
+            "2",
+            "0",
+            "6",
+            "-2"
+          ],
+          "answer": 3,
+          "stdout": "-2",
+          "hint": "Trace stock: 10 → 6 → 2 → … The check happens before each pass.",
+          "explain": "10 → 6 → 2 → -2. When stock is -2, stock > 0 is False and the loop stops, so -2 is printed.",
+          "revisit": "Week 4 — while loops"
+        },
+        {
+          "id": "w4q7",
+          "kind": "bug",
+          "code": "total = 0\nfor s in [5, 10, 15]:\n    total = total + s\n    print(total)",
+          "q": "The manager wants ONE line: the final total, 30. It prints 5, 15 and 30. What is the fix?",
+          "options": [
+            "Move total = 0 inside the loop",
+            "Move print(total) out of the loop (no indent)",
+            "Change + to *",
+            "Use range(3)"
+          ],
+          "answer": 1,
+          "plain": true,
+          "stdout": "5\n15\n30",
+          "hint": "Which lines repeat? The indented ones.",
+          "explain": "print(total) is indented, so it runs on every pass. Unindent it so it runs once, after the loop.",
+          "revisit": "Week 4 — Mistakes: what belongs inside the loop"
+        },
+        {
+          "id": "w4q8",
+          "kind": "bug",
+          "code": "n = 1\nwhile n <= 3:\n    print(n)",
+          "q": "This loop never stops. Which line is missing inside the loop?",
+          "options": [
+            "n = 0",
+            "print(n)",
+            "n = n + 1",
+            "while n <= 4:"
+          ],
+          "answer": 2,
+          "noexec": true,
+          "hint": "Something inside the loop must change, or the condition stays True for ever.",
+          "explain": "n never changes, so n <= 3 is always True: an infinite loop. Add n = n + 1 inside the loop.",
+          "revisit": "Week 4 — Every while loop needs something that changes"
+        },
+        {
+          "id": "w4q9",
+          "kind": "bug",
+          "code": "for month in range(1, 12):\n    print(month)",
+          "q": "It should print the months 1 to 12, but it stops at 11. Which line fixes it?",
+          "options": [
+            "for month in range(1, 13):",
+            "for month in range(0, 12):",
+            "for month in range(12):",
+            "for month in range(2, 13):"
+          ],
+          "answer": 0,
+          "hint": "range(start, stop) never includes the stop value.",
+          "explain": "range(1, 12) stops before 12. To include 12, the stop value must be one more: range(1, 13).",
+          "revisit": "Week 4 — range(): the stop value is not included",
+          "stdout": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11",
+          "fixed": "for month in range(1, 13):\n    print(month)",
+          "fix_stdout": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
+        },
+        {
+          "id": "w4q10",
+          "kind": "trace",
+          "code": "total = 0\nfor price in [15, 40, 25, 50]:\n    if price >= 25:\n        total = total + price",
+          "q": "Trace the loop. What is total after the THIRD pass (price = 25)?",
+          "options": [
+            "40",
+            "65",
+            "115",
+            "80"
+          ],
+          "answer": 1,
+          "hint": "Write a row per pass: 15 (no), 40 (yes), 25 (…?).",
+          "explain": "Pass 1: 15 is below 25, total stays 0. Pass 2: 40 → total 40. Pass 3: 25 >= 25 → total 65. (After pass 4 it is 115.)",
+          "revisit": "Week 4 — Lab A2: trace an accumulator",
+          "check": "total = 0\nfor n, price in enumerate([15, 40, 25, 50], 1):\n    if price >= 25:\n        total = total + price\n    if n == 3:\n        print(total)"
+        }
+      ]
+    },
+    {
+      "id": "w5",
+      "week": "Week 5",
+      "title": "Lists & Tuples",
+      "badge": "collector",
+      "topics": "index, [-1], slicing, append / remove, replacing an item, tuples",
+      "questions": [
+        {
+          "id": "w5q1",
+          "kind": "predict",
+          "code": "items = [\"Pen\", \"Book\", \"Bag\", \"Cap\"]\nprint(items[1])\nprint(items[-1])",
+          "q": "What does this print?",
+          "options": [
+            "Book\nCap",
+            "Pen\nCap",
+            "Book\nBag",
+            "Pen\nBag"
+          ],
+          "answer": 0,
+          "hint": "Positions start at 0. -1 is the last item.",
+          "explain": "items[1] is the second item (Book), because counting starts at 0. items[-1] is always the last item: Cap.",
+          "revisit": "Week 5 — Indexing: [0] is first, [-1] is last",
+          "stdout": "Book\nCap"
+        },
+        {
+          "id": "w5q2",
+          "kind": "predict",
+          "code": "sales = [300, 450, 120, 610, 280]\nprint(sales[1:3])",
+          "q": "What does this print?",
+          "options": [
+            "[450, 120]",
+            "[300, 450, 120]",
+            "[450, 120, 610]",
+            "[300, 450]"
+          ],
+          "answer": 0,
+          "hint": "A slice [start:stop] includes start but stops BEFORE stop.",
+          "explain": "sales[1:3] takes positions 1 and 2 — it stops before position 3: [450, 120].",
+          "revisit": "Week 5 — Slicing",
+          "stdout": "[450, 120]"
+        },
+        {
+          "id": "w5q3",
+          "kind": "predict",
+          "code": "cart = [\"Milk\", \"Bread\"]\ncart.append(\"Eggs\")\nprint(cart)\nprint(len(cart))",
+          "q": "What does this print?",
+          "options": [
+            "['Milk', 'Bread', 'Eggs']\n3",
+            "['Eggs', 'Milk', 'Bread']\n3",
+            "['Milk', 'Bread', 'Eggs']\n2",
+            "['Milk', 'Bread']\n3"
+          ],
+          "answer": 0,
+          "hint": "append adds to the END of the list.",
+          "explain": "append puts Eggs at the end, so the list now has 3 items.",
+          "revisit": "Week 5 — append, remove, pop",
+          "stdout": "['Milk', 'Bread', 'Eggs']\n3"
+        },
+        {
+          "id": "w5q4",
+          "kind": "predict",
+          "code": "stock = [\"Tea\", \"Rice\", \"Oil\", \"Sugar\"]\nstock.remove(\"Oil\")\nprint(stock)",
+          "q": "What does this print?",
+          "options": [
+            "['Tea', 'Rice', 'Sugar']",
+            "['Tea', 'Rice', 'Oil']",
+            "['Tea', 'Oil', 'Sugar']",
+            "Error"
+          ],
+          "answer": 0,
+          "hint": "remove takes out the item with that VALUE.",
+          "explain": "remove(\"Oil\") finds the value Oil and takes it out; the others keep their order.",
+          "revisit": "Week 5 — append, remove, pop",
+          "stdout": "['Tea', 'Rice', 'Sugar']"
+        },
+        {
+          "id": "w5q5",
+          "kind": "predict",
+          "code": "prices = [5, 8, 12]\nprices[0] = 6\nprint(prices)",
+          "q": "What does this print?",
+          "options": [
+            "[6, 8, 12]",
+            "[5, 6, 8, 12]",
+            "[5, 8, 12, 6]",
+            "[6, 5, 8, 12]"
+          ],
+          "answer": 0,
+          "hint": "= on one position REPLACES that item; it does not add a new one.",
+          "explain": "prices[0] = 6 replaces the first item, so the list still has three items: [6, 8, 12].",
+          "revisit": "Week 5 — Lab A2: update the stock list",
+          "stdout": "[6, 8, 12]"
+        },
+        {
+          "id": "w5q6",
+          "kind": "bug",
+          "code": "months = [\"Jan\", \"Feb\", \"Mar\"]\nprint(months[3])",
+          "q": "Which error does Python show?",
+          "options": [
+            "IndexError",
+            "NameError",
+            "No error — it prints Mar",
+            "SyntaxError"
+          ],
+          "answer": 0,
+          "hint": "Three items have the positions 0, 1 and 2.",
+          "explain": "The valid positions are 0, 1 and 2, so position 3 is past the end: IndexError. Use months[2] or months[-1] for Mar.",
+          "revisit": "Week 5 — Lab A3: IndexError",
+          "error": "IndexError"
+        },
+        {
+          "id": "w5q7",
+          "kind": "bug",
+          "code": "location = (26.2, 50.6)\nlocation[0] = 26.3",
+          "q": "What happens when this runs?",
+          "options": [
+            "TypeError — a tuple cannot be changed",
+            "location becomes (26.3, 50.6)",
+            "IndexError",
+            "SyntaxError"
+          ],
+          "answer": 0,
+          "hint": "Round brackets ( ) make a tuple. Can a tuple change?",
+          "explain": "A tuple is fixed: once created, its items cannot be replaced, so Python shows a TypeError. Use a list [ ] when values must change.",
+          "revisit": "Week 5 — Tuples: fixed records",
+          "plain": true,
+          "error": "TypeError"
+        },
+        {
+          "id": "w5q8",
+          "kind": "predict",
+          "code": "units = [4, 6, 5]\ntotal = 0\nfor u in units:\n    total = total + u\nprint(total / len(units))",
+          "q": "What does this print?",
+          "options": [
+            "5.0",
+            "15",
+            "5",
+            "3"
+          ],
+          "answer": 0,
+          "hint": "First the accumulator (total), then divide by how many items there are.",
+          "explain": "total becomes 15 and len(units) is 3, so 15 / 3 = 5.0 — the / always gives a decimal point.",
+          "revisit": "Week 5 — Lists with the Week-4 accumulator",
+          "stdout": "5.0"
+        }
+      ]
+    },
+    {
+      "id": "w6",
+      "week": "Week 6",
+      "title": "Functions",
+      "badge": "function_builder",
+      "topics": "def and return, calling, defaults, if inside a function, return vs print",
+      "questions": [
+        {
+          "id": "w6q1",
+          "kind": "predict",
+          "code": "def add_fee(amount):\n    return amount + 2\n\nprint(add_fee(10))\nprint(add_fee(25))",
+          "q": "What does this print?",
+          "options": [
+            "12\n27",
+            "10\n25",
+            "12",
+            "Error"
+          ],
+          "answer": 0,
+          "hint": "Each call sends a different amount into the same rule.",
+          "explain": "The same rule runs twice: 10 + 2 = 12, then 25 + 2 = 27. Write the rule once, reuse it.",
+          "revisit": "Week 6 — The solution in Python: write once, reuse",
+          "stdout": "12\n27"
+        },
+        {
+          "id": "w6q2",
+          "kind": "predict",
+          "code": "def welcome():\n    print(\"Welcome!\")\n\nprint(\"Shop open\")",
+          "q": "What does this print?",
+          "options": [
+            "Shop open",
+            "Welcome!\nShop open",
+            "Welcome!",
+            "Nothing"
+          ],
+          "answer": 0,
+          "hint": "Is welcome() ever CALLED?",
+          "explain": "def only defines the function; its body runs when the function is called. welcome() is never called, so only Shop open prints.",
+          "revisit": "Week 6 — Lab A0: call versus define",
+          "stdout": "Shop open"
+        },
+        {
+          "id": "w6q3",
+          "kind": "predict",
+          "code": "def bonus(sales):\n    if sales >= 1000:\n        return 50\n    else:\n        return 0\n\nprint(bonus(1000))\nprint(bonus(999))",
+          "q": "What does this print?",
+          "options": [
+            "50\n0",
+            "0\n0",
+            "50\n50",
+            "0\n50"
+          ],
+          "answer": 0,
+          "hint": "Test the boundary: does exactly 1000 qualify?",
+          "explain": "1000 >= 1000 is True, so the first call returns 50. 999 is below 1000, so the second returns 0.",
+          "revisit": "Week 6 — A business rule inside a function",
+          "stdout": "50\n0"
+        },
+        {
+          "id": "w6q4",
+          "kind": "predict",
+          "code": "def price_with_vat(price, rate=0.10):\n    return price + price * rate\n\nprint(price_with_vat(50))\nprint(price_with_vat(50, 0.20))",
+          "q": "What does this print?",
+          "options": [
+            "55.0\n60.0",
+            "55.0\n55.0",
+            "50\n60.0",
+            "Error"
+          ],
+          "answer": 0,
+          "hint": "When a call leaves rate out, the default 0.10 is used.",
+          "explain": "The first call uses the default 10%: 50 + 5.0 = 55.0. The second passes 0.20: 50 + 10.0 = 60.0.",
+          "revisit": "Week 6 — Default & keyword arguments",
+          "stdout": "55.0\n60.0"
+        },
+        {
+          "id": "w6q5",
+          "kind": "predict",
+          "code": "def discount(price):\n    price * 0.10\n\nprint(discount(80))",
+          "q": "What does this print?",
+          "options": [
+            "8.0",
+            "None",
+            "80",
+            "Error"
+          ],
+          "answer": 1,
+          "hint": "Look for the word return.",
+          "explain": "The function calculates 8.0 but never returns it. A function without return gives back None.",
+          "revisit": "Week 6 — Common mistakes: no return → None",
+          "stdout": "None"
+        },
+        {
+          "id": "w6q6",
+          "kind": "bug",
+          "code": "def fee(bill):\n    print(bill * 0.05)\n\ntotal = 100 + fee(100)",
+          "q": "It shows 5.0 and then crashes with a TypeError. What is the fix?",
+          "options": [
+            "Change print(bill * 0.05) to return bill * 0.05",
+            "Change fee(100) to fee",
+            "Move total = 100 + fee(100) above the def",
+            "Rename the function to Fee"
+          ],
+          "answer": 0,
+          "hint": "print shows a value to people. Which word hands it back to the program?",
+          "explain": "fee prints 5.0 but returns None, and 100 + None is a TypeError. With return, fee(100) gives 5.0 and total is 105.0.",
+          "revisit": "Week 6 — Lab A5: return versus print",
+          "plain": true,
+          "error": "TypeError",
+          "fixed": "def fee(bill):\n    return bill * 0.05\n\ntotal = 100 + fee(100)\nprint(total)",
+          "fix_stdout": "105.0"
+        },
+        {
+          "id": "w6q7",
+          "kind": "bug",
+          "code": "def tax(amount)\n    return amount * 0.10",
+          "q": "Which error does Python show?",
+          "options": [
+            "SyntaxError",
+            "NameError",
+            "TypeError",
+            "No error"
+          ],
+          "answer": 0,
+          "hint": "Look at the end of the def line.",
+          "explain": "A def line must end with a colon. Without it Python cannot read the code: SyntaxError.",
+          "revisit": "Week 6 — Lab A4: two broken lines",
+          "error": "SyntaxError"
+        },
+        {
+          "id": "w6q8",
+          "kind": "predict",
+          "code": "def gross(hours, rate):\n    return hours * rate\n\ndef net(amount):\n    return amount - amount * 0.10\n\npay = gross(10, 8)\nprint(net(pay))",
+          "q": "Two small functions, called in order. What does this print?",
+          "options": [
+            "72.0",
+            "80",
+            "8.0",
+            "88.0"
+          ],
+          "answer": 0,
+          "hint": "First gross(10, 8). Then net takes that result.",
+          "explain": "gross(10, 8) = 80. net(80) = 80 − 8.0 = 72.0. Top-down design: one job per function, called in order.",
+          "revisit": "Week 6 — Top-down design",
+          "stdout": "72.0"
+        }
+      ]
+    },
+    {
+      "id": "mc",
+      "week": "Weeks 1–6",
+      "title": "Midterm Challenge",
+      "badge": "exam_ready",
+      "final": true,
+      "topics": "Mixed, in the exam's styles: trace, predict, find the bug, plan in pseudocode",
+      "questions": [
+        {
+          "id": "mcq1",
+          "kind": "trace",
+          "code": "count = 0\ntotal = 0\nfor amount in [70, 20, 90, 35]:\n    if amount > 50:\n        total = total + amount\n        count = count + 1\nprint(total)\nprint(count)",
+          "q": "Fill a trace table in your head. What are the two printed lines?",
+          "options": [
+            "160\n2",
+            "215\n4",
+            "70\n1",
+            "160\n3"
+          ],
+          "answer": 0,
+          "hint": "One row per amount: is it above 50? Only then do total and count change.",
+          "explain": "70 → total 70, count 1. 20 → no change. 90 → total 160, count 2. 35 → no change. Output: 160 and 2.",
+          "revisit": "Week 4 — Counter and accumulator in one loop",
+          "stdout": "160\n2"
+        },
+        {
+          "id": "mcq2",
+          "kind": "predict",
+          "code": "branch = \"Budaiya\"\nprint(branch.upper())\nprint(len(branch))",
+          "q": "What does this print?",
+          "options": [
+            "BUDAIYA\n7",
+            "BUDAIYA\n6",
+            "Budaiya\n7",
+            "BUD\n7"
+          ],
+          "answer": 0,
+          "hint": "Count the letters one by one.",
+          "explain": ".upper() gives BUDAIYA and len() counts its 7 letters.",
+          "revisit": "Week 2 — Strings: len() and .upper()",
+          "stdout": "BUDAIYA\n7"
+        },
+        {
+          "id": "mcq3",
+          "kind": "predict",
+          "code": "scores = [70, 85, 90]\nscores.append(60)\nscores[1] = 80\nprint(scores[-1])\nprint(len(scores))",
+          "q": "What does this print?",
+          "options": [
+            "60\n4",
+            "90\n3",
+            "80\n4",
+            "60\n3"
+          ],
+          "answer": 0,
+          "hint": "append adds to the end; scores[1] = 80 only replaces one item.",
+          "explain": "After append the list is [70, 85, 90, 60]; scores[1] = 80 makes it [70, 80, 90, 60]. The last item is 60 and there are 4 items.",
+          "revisit": "Week 5 — append, replace, [-1] and len()",
+          "stdout": "60\n4"
+        },
+        {
+          "id": "mcq4",
+          "kind": "bug",
+          "code": "total = 0\nfor cost in [12, 8, 20]:\ntotal = total + cost\nprint(total)",
+          "q": "This should print 40. What is wrong, and what is the fix?",
+          "options": [
+            "Indent total = total + cost so it is inside the loop",
+            "Change total = 0 to total = 40",
+            "Remove the colon after the for line",
+            "Change print(total) to print(cost)"
+          ],
+          "answer": 0,
+          "hint": "Which line should repeat for every cost?",
+          "explain": "The body of a for loop must be indented. Python stops with an IndentationError. Indent the line and the total is 40.",
+          "revisit": "Week 4 — Lab A4: three broken things",
+          "plain": true,
+          "error": "IndentationError",
+          "fixed": "total = 0\nfor cost in [12, 8, 20]:\n    total = total + cost\nprint(total)",
+          "fix_stdout": "40"
+        },
+        {
+          "id": "mcq5",
+          "kind": "bug",
+          "code": "def late_fee(days):\n    if days > 7:\n        return 5\n    return 0\n\nprint(late_fee(7))",
+          "q": "A BD 5 fee applies at 7 days late or more, but late_fee(7) prints 0. Which line fixes it?",
+          "options": [
+            "if days >= 7:",
+            "if days == 7:",
+            "return 7",
+            "if days < 7:"
+          ],
+          "answer": 0,
+          "hint": "Should exactly 7 days count?",
+          "explain": "> 7 leaves out 7 itself. 'At 7 or more' is >= 7, and then late_fee(7) returns 5. (If the if is False, Python skips to return 0.)",
+          "revisit": "Week 3 boundary inside a Week 6 function",
+          "stdout": "0",
+          "fixed": "def late_fee(days):\n    if days >= 7:\n        return 5\n    return 0\n\nprint(late_fee(7))",
+          "fix_stdout": "5"
+        },
+        {
+          "id": "mcq6",
+          "kind": "plan",
+          "code": "START\n  INPUT units\n  IF ____________ THEN\n     price = units * 4\n  ELSE\n     price = units * 5\n  END IF\n  DISPLAY price\nEND",
+          "q": "Orders of 20 units or more pay BD 4 per unit; smaller orders pay BD 5. Which condition fills the gap?",
+          "options": [
+            "units >= 20",
+            "units > 20",
+            "units <= 20",
+            "units == 20"
+          ],
+          "answer": 0,
+          "hint": "'20 or more' — must exactly 20 get BD 4?",
+          "explain": "'20 or more' includes 20, so the condition is units >= 20. units > 20 would charge an order of exactly 20 the higher price.",
+          "revisit": "Week 3 — Pseudocode and the boundary",
+          "noexec": true
+        },
+        {
+          "id": "mcq7",
+          "kind": "predict",
+          "code": "quantity = 150\nif quantity >= 200:\n    rate = 0.08\nelif quantity >= 100:\n    rate = 0.03\nelse:\n    rate = 0\nprint(f\"{quantity * 10 * (1 - rate):.2f}\")",
+          "q": "150 units at BD 10 each, with tiered discounts. What does this print?",
+          "options": [
+            "1455.00",
+            "1500.00",
+            "1380.00",
+            "1545.00"
+          ],
+          "answer": 0,
+          "hint": "Which tier does 150 fall into? The first True rule wins.",
+          "explain": "150 is not >= 200, but it is >= 100, so rate = 0.03. 1500 × 0.97 = 1455.00.",
+          "revisit": "Week 3 — elif tiers",
+          "stdout": "1455.00"
+        },
+        {
+          "id": "mcq8",
+          "kind": "predict",
+          "code": "visits = [30, 45, 30, 60]\ntotal = 0\nbest = visits[0]\nfor v in visits:\n    total = total + v\n    if v > best:\n        best = v\nprint(total, best)",
+          "q": "One loop, two answers. What does this print?",
+          "options": [
+            "165 60",
+            "165 30",
+            "60 165",
+            "135 60"
+          ],
+          "answer": 0,
+          "hint": "total adds every visit; best only changes when a visit beats it.",
+          "explain": "The accumulator gives 30 + 45 + 30 + 60 = 165. The finder starts at 30 and ends at 60.",
+          "revisit": "Week 4 — Accumulator and finder in one loop",
+          "stdout": "165 60"
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var BANK = JSON.parse(document.getElementById("bank").textContent);
+  var LEVELS = BANK.levels;
+  var STORE_KEY = "qm320_python_quest_midterm";
+  var XP_RIGHT = 10, XP_STREAK = 5, XP_HINT = 5;
+  var RANKS = [
+    { min: 0, name: "Beginner" },
+    { min: 200, name: "Explorer" },
+    { min: 400, name: "Analyst" },
+    { min: 600, name: "Python Pro" }
+  ];
+  var BADGES = [
+    { id: "first_steps", icon: "👣", name: "First Steps", rule: "Finish Week 1" },
+    { id: "type_tamer", icon: "🔤", name: "Type Tamer", rule: "Finish Week 2" },
+    { id: "decision_maker", icon: "🔀", name: "Decision Maker", rule: "Finish Week 3" },
+    { id: "loop_master", icon: "🔁", name: "Loop Master", rule: "Finish Week 4" },
+    { id: "collector", icon: "📦", name: "Collector", rule: "Finish Week 5" },
+    { id: "function_builder", icon: "🧩", name: "Function Builder", rule: "Finish Week 6" },
+    { id: "exam_ready", icon: "🎓", name: "Exam Ready", rule: "Finish the Midterm Challenge" },
+    { id: "perfect", icon: "⭐", name: "Perfect Score", rule: "8 out of 8 in any level" },
+    { id: "on_fire", icon: "🔥", name: "On Fire", rule: "5 right answers in a row" },
+    { id: "no_hints", icon: "🧠", name: "Solo Thinker", rule: "A full level with no hints" },
+    { id: "bug_hunter", icon: "🐞", name: "Bug Hunter", rule: "Every bug question right" },
+    { id: "explorer", icon: "🗺️", name: "Python Explorer", rule: "Finish all seven levels" }
+  ];
+  var ALL_BUG_IDS = [];
+  LEVELS.forEach(function (lv) { lv.questions.forEach(function (q) { if (q.kind === "bug") ALL_BUG_IDS.push(q.id); }); });
+
+  // ---------- storage (works without it: progress then lasts for this visit only) ----------
+  var memory = null;
+  function blank() { return { name: "", levels: {}, badges: {}, bugsRight: {} }; }
+  function load() {
+    try {
+      var raw = window.localStorage.getItem(STORE_KEY);
+      if (raw) { var s = JSON.parse(raw); if (s && s.levels) return s; }
+    } catch (e) { /* storage blocked */ }
+    return memory || blank();
+  }
+  function save(s) {
+    memory = s;
+    try { window.localStorage.setItem(STORE_KEY, JSON.stringify(s)); } catch (e) { /* storage blocked */ }
+  }
+  var state = load();
+
+  // ---------- helpers ----------
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function show(id) { ["home", "quiz", "result", "certificate"].forEach(function (s) { $(s).classList.toggle("hidden", s !== id); }); window.scrollTo(0, 0); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function totalXP() { var t = 0; for (var k in state.levels) t += state.levels[k].bestXP || 0; return t; }
+  function rankFor(xp) { var r = RANKS[0]; RANKS.forEach(function (x) { if (xp >= x.min) r = x; }); return r; }
+  function nextRank(xp) { for (var i = 0; i < RANKS.length; i++) if (RANKS[i].min > xp) return RANKS[i]; return null; }
+  function starsFor(score) { return score === 8 ? 3 : score >= 6 ? 2 : 1; }
+  function starHTML(n, box) { box.innerHTML = ""; for (var i = 0; i < 3; i++) box.appendChild(el("span", i < n ? "on" : "", "★")); }
+  var NEED_FOR_FINAL = 3;
+  function weeksDone() { return LEVELS.filter(function (l) { return !l.final && state.levels[l.id]; }).length; }
+  function unlocked(i) { return !LEVELS[i].final || weeksDone() >= NEED_FOR_FINAL; }
+  function badgeCount() { return Object.keys(state.badges).length; }
+
+  var toastTimer = null, toastQueue = [];
+  function toast(html) {
+    toastQueue.push(html);
+    if (toastTimer) return;
+    (function next() {
+      if (!toastQueue.length) { toastTimer = null; return; }
+      var t = $("toast"); t.innerHTML = toastQueue.shift(); t.classList.add("show");
+      toastTimer = setTimeout(function () { t.classList.remove("show"); setTimeout(next, 400); }, 2600);
+    })();
+  }
+  function award(id) {
+    if (state.badges[id]) return false;
+    state.badges[id] = new Date().toISOString().slice(0, 10);
+    var b = BADGES.filter(function (x) { return x.id === id; })[0];
+    toast("New badge: <b>" + b.icon + " " + b.name + "</b>");
+    return true;
+  }
+
+  function updateHeader() {
+    var xp = totalXP();
+    $("hdr-xp").textContent = xp; $("hdr-rank").textContent = rankFor(xp).name; $("hdr-badges").textContent = badgeCount();
+  }
+
+  // ---------- home ----------
+  function renderHome() {
+    var xp = totalXP(), r = rankFor(xp), nr = nextRank(xp);
+    updateHeader();
+    $("rank-name").textContent = r.name;
+    $("rank-next").textContent = nr ? "· " + (nr.min - xp) + " XP to " + nr.name : "· top rank reached!";
+    var max = RANKS[RANKS.length - 1].min;
+    $("xp-fill").style.width = Math.min(100, Math.round(xp / max * 100)) + "%";
+    $("xp-text").textContent = xp + " XP";
+    $("nick").value = state.name || "";
+
+    var box = $("levels"); box.innerHTML = "";
+    LEVELS.forEach(function (lv, i) {
+      var rec = state.levels[lv.id], open = unlocked(i);
+      var c = el("div", "level" + (open ? "" : " locked"));
+      c.appendChild(el("div", "wk", lv.week));
+      c.appendChild(el("h3", null, lv.title));
+      c.appendChild(el("div", "topics", lv.topics));
+      var st = el("div", "stars"); starHTML(rec ? rec.stars : 0, st); c.appendChild(st);
+      if (rec) c.appendChild(el("div", "lock", "Best: " + rec.best + "/8 · " + rec.bestXP + " XP"));
+      var b = el("button", rec ? "secondary" : "", rec ? "Replay" : open ? "Start level" : "🔒 Locked");
+      b.disabled = !open;
+      if (!open) c.appendChild(el("div", "lock", "Finish any " + NEED_FOR_FINAL + " week levels to unlock (" + weeksDone() + " done)"));
+      b.addEventListener("click", function () { startLevel(i); });
+      c.appendChild(b);
+      box.appendChild(c);
+    });
+
+    var bb = $("badges"); bb.innerHTML = "";
+    BADGES.forEach(function (b) {
+      var got = !!state.badges[b.id];
+      var d = el("div", "badge" + (got ? " got" : ""));
+      d.appendChild(el("span", "ic", b.icon));
+      d.appendChild(el("b", null, b.name));
+      d.appendChild(el("span", null, got ? "Earned " + state.badges[b.id] : b.rule));
+      bb.appendChild(d);
+    });
+  }
+
+  // ---------- quiz ----------
+  var run = null;
+  function startLevel(i) {
+    var lv = LEVELS[i];
+    run = { li: i, lv: lv, qs: shuffle(lv.questions), n: 0, right: 0, xp: 0, streak: 0, bestStreak: 0, hints: 0, results: [], answered: false, hintUsed: false, badgesBefore: badgeCount() };
+    show("quiz");
+    renderQuestion();
+  }
+  function renderQuestion() {
+    var q = run.qs[run.n];
+    run.answered = false; run.hintUsed = false;
+    $("q-level").textContent = run.lv.week + " · " + run.lv.title + " — question " + (run.n + 1) + " of " + run.qs.length;
+    var dots = $("q-dots"); dots.innerHTML = "";
+    run.qs.forEach(function (_, k) {
+      var d = el("i"); if (k < run.results.length) d.className = run.results[k].ok ? "ok" : "no"; if (k === run.n) d.className += " cur"; dots.appendChild(d);
+    });
+    $("q-xp").textContent = run.xp; $("q-streak").textContent = run.streak;
+    var kind = $("q-kind");
+    var KINDS = { predict: "Predict the output", bug: "🐞 Find the bug", trace: "🔍 Trace the code", plan: "📝 Plan it (pseudocode)" };
+    kind.textContent = KINDS[q.kind] || KINDS.predict;
+    kind.className = "kind" + (q.kind === "predict" ? "" : " " + q.kind);
+    $("q-code").textContent = q.code;
+    $("q-code").setAttribute("data-lang", q.kind === "plan" && !/^#/.test(q.code) ? "PSEUDOCODE" : "PYTHON");
+    $("q-text").textContent = q.q;
+    var opts = $("q-options"); opts.innerHTML = "";
+    var order = shuffle(q.options.map(function (_, k) { return k; }));
+    order.forEach(function (k, pos) {
+      var b = el("button", "opt");
+      b.dataset.k = k;
+      b.appendChild(el("span", "k", String(pos + 1)));
+      b.appendChild(el("span", "t" + (q.plain ? " plain" : ""), q.options[k]));
+      b.addEventListener("click", function () { answer(k, b); });
+      opts.appendChild(b);
+    });
+    $("q-hint").className = "hint"; $("q-hint").textContent = "💡 " + q.hint;
+    $("q-feedback").className = "feedback";
+    $("btn-hint").disabled = false;
+    $("btn-next").disabled = true;
+    $("btn-next").textContent = run.n === run.qs.length - 1 ? "See results →" : "Next →";
+  }
+  function answer(k, btn) {
+    if (run.answered) return;
+    run.answered = true;
+    var q = run.qs[run.n], ok = k === q.answer, gained = 0;
+    Array.prototype.forEach.call($("q-options").children, function (b) {
+      b.disabled = true;
+      if (+b.dataset.k === q.answer) b.classList.add("correct");
+    });
+    if (!ok) btn.classList.add("wrong");
+    if (ok) {
+      run.right++; run.streak++; run.bestStreak = Math.max(run.bestStreak, run.streak);
+      gained = XP_RIGHT + (run.streak >= 3 ? XP_STREAK : 0) - (run.hintUsed ? XP_HINT : 0);
+      if (q.kind === "bug") state.bugsRight[q.id] = true;
+    } else {
+      run.streak = 0;
+      gained = run.hintUsed ? -XP_HINT : 0;
+    }
+    run.xp = Math.max(0, run.xp + gained);
+    run.results.push({ q: q, ok: ok, picked: k });
+    var fb = $("q-feedback");
+    fb.className = "feedback show " + (ok ? "good" : "bad");
+    var praise = ["Correct!", "Nice work!", "Exactly right!", "Well done!"];
+    $("fb-title").textContent = ok ? praise[run.right % praise.length] + (gained > 0 ? "  +" + gained + " XP" : "") + (run.streak >= 3 ? "  🔥 " + run.streak + " in a row" : "")
+                                   : "Not quite — the right answer is highlighted.";
+    $("fb-text").textContent = q.explain;
+    $("fb-revisit").textContent = "📘 Revisit: " + q.revisit;
+    $("q-xp").textContent = run.xp; $("q-streak").textContent = run.streak;
+    $("btn-hint").disabled = true;
+    $("btn-next").disabled = false;
+    $("btn-next").focus();
+    if (run.streak >= 5 && award("on_fire")) { save(state); updateHeader(); }
+  }
+  function useHint() {
+    if (run.answered || run.hintUsed) return;
+    run.hintUsed = true; run.hints++;
+    $("q-hint").classList.add("show");
+    $("btn-hint").disabled = true;
+  }
+  function nextQuestion() {
+    if (!run.answered) return;
+    if (run.n < run.qs.length - 1) { run.n++; renderQuestion(); } else { finishLevel(); }
+  }
+
+  // ---------- result ----------
+  function finishLevel() {
+    var lv = run.lv, score = run.right, stars = starsFor(score);
+    var before = run.badgesBefore;
+    var rec = state.levels[lv.id];
+    var improved = !rec || score > rec.best || run.xp > rec.bestXP;
+    state.levels[lv.id] = {
+      best: rec ? Math.max(rec.best, score) : score,
+      bestXP: rec ? Math.max(rec.bestXP, run.xp) : run.xp,
+      stars: rec ? Math.max(rec.stars, stars) : stars,
+      plays: (rec ? rec.plays : 0) + 1
+    };
+    award(lv.badge);
+    if (score === 8) award("perfect");
+    if (run.hints === 0) award("no_hints");
+    if (ALL_BUG_IDS.every(function (id) { return state.bugsRight[id]; })) award("bug_hunter");
+    if (LEVELS.every(function (l) { return state.levels[l.id]; })) award("explorer");
+    save(state);
+    updateHeader();
+
+    $("r-level").textContent = lv.week + " · " + lv.title;
+    $("r-score").textContent = score + " / 8";
+    starHTML(stars, $("r-stars"));
+    var msg = score === 8 ? "Perfect! You have mastered " + lv.title.toLowerCase() + "."
+            : score >= 6 ? "Great job — replay to reach 3 stars."
+            : score >= 4 ? "Good start. Read the explanations below, then replay."
+            : "Keep going — review " + (lv.final ? "the weeks named below" : lv.week) + " in your lab notebook, then try again.";
+    $("r-msg").textContent = msg;
+    var finalLv = LEVELS.filter(function (l) { return l.final; })[0];
+    var nextOpen = !lv.final && finalLv && !state.levels[finalLv.id] && weeksDone() === NEED_FOR_FINAL ? " The Midterm Challenge is now unlocked!" : "";
+    $("r-xp").textContent = "+" + run.xp + " XP this round" + (improved ? " (counts towards your best)" : " (your best stays " + state.levels[lv.id].bestXP + " XP)") + "." + nextOpen;
+    var nb = $("r-badges"); nb.innerHTML = "";
+    var gainedBadges = Object.keys(state.badges).length - before;
+    if (gainedBadges > 0) nb.appendChild(el("div", "muted", "🏅 " + gainedBadges + " new badge" + (gainedBadges > 1 ? "s" : "") + " — see the map."));
+
+    var rv = $("r-review"); rv.innerHTML = "";
+    rv.appendChild(el("h3", null, "Review"));
+    run.results.forEach(function (r, k) {
+      var p = el("p"); p.style.margin = "10px 0 0";
+      p.appendChild(el("b", null, (r.ok ? "✅ " : "❌ ") + "Q" + (k + 1) + ". "));
+      p.appendChild(document.createTextNode(r.q.q + " "));
+      var s = el("span", "muted", r.ok ? "" : "Answer: " + r.q.options[r.q.answer].replace(/\n/g, " / ") + ". " + r.q.revisit);
+      p.appendChild(s);
+      rv.appendChild(p);
+    });
+    show("result");
+  }
+
+  // ---------- certificate ----------
+  function renderCert() {
+    var xp = totalXP();
+    var done = LEVELS.filter(function (l) { return state.levels[l.id]; }).length;
+    var stars = 0; LEVELS.forEach(function (l) { if (state.levels[l.id]) stars += state.levels[l.id].stars; });
+    $("c-name").textContent = (state.name || "").trim() || "Your name here";
+    $("c-line").textContent = "has completed " + done + " of " + LEVELS.length + " levels with " + stars + " stars and " + xp + " XP — rank: " + rankFor(xp).name + ".";
+    var icons = BADGES.filter(function (b) { return state.badges[b.id]; }).map(function (b) { return b.icon; });
+    $("c-icons").textContent = icons.length ? icons.join(" ") : "Earn badges to show them here";
+    $("c-date").textContent = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    show("certificate");
+  }
+
+  // ---------- events ----------
+  $("nick").addEventListener("input", function () { state.name = this.value.slice(0, 40); save(state); });
+  $("btn-hint").addEventListener("click", useHint);
+  $("btn-next").addEventListener("click", nextQuestion);
+  $("btn-quit").addEventListener("click", function () { if (!run.results.length || window.confirm("Leave this level? This round will not be saved.")) { renderHome(); show("home"); } });
+  $("btn-replay").addEventListener("click", function () { startLevel(run.li); });
+  $("btn-map").addEventListener("click", function () { renderHome(); show("home"); });
+  $("btn-cert").addEventListener("click", renderCert);
+  $("btn-cert-back").addEventListener("click", function () { renderHome(); show("home"); });
+  $("btn-print").addEventListener("click", function () { window.print(); });
+  $("btn-reset").addEventListener("click", function () {
+    if (window.confirm("Reset all your XP, stars and badges on this device?")) { state = blank(); save(state); renderHome(); }
+  });
+  document.addEventListener("keydown", function (e) {
+    if ($("quiz").classList.contains("hidden") || e.target.tagName === "INPUT") return;
+    if (/^[1-4]$/.test(e.key) && !run.answered) {
+      var b = $("q-options").children[+e.key - 1]; if (b) b.click();
+    } else if (e.key === "Enter" && run.answered) {
+      e.preventDefault(); nextQuestion();
+    }
+  });
+
+  renderHome();
+})();
+</script>
+</body>
+</html>
